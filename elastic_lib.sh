@@ -7,34 +7,29 @@ if [ -z "$ELASTIC_HOST" ]; then
 fi
 
 function call() {
-    method=$1
-    uri=$2
-    header=$3
-    data=$4
-
-    command="curl -X $method "
-    if [ -n "$headers" ]; then
-        command="$command -H $header"
+    local method=$1; shift
+    local uri=$1; shift
+    local curl_args=("$@")
+    local args=()
+    if [ -n "$header" ]; then
+        command="$command -H \"$header\""
     fi
     
-    if [ -n "$data" ]; then
-        command="$command -d $data"
-    fi
+    echo "DEBUG: uri = ${uri}"
+    echo "DEBUG: method = ${method}"
 
     if [ -n "$AWS_SECRET_ACCESS_KEY" ]  && [ -n "$AWS_REGION" ] &&
        [ -n "$AWS_ACCESS_KEY_ID" ] && [ -z "$ELASTIC_IGNORE_AWS" ]; then
         echo "Calling AWS Elasticsearch..."
-        command="$command --aws-sigv4 \"aws:amz:$AWS_REGION:es\" -u $AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY"
+        args+=(--aws-sigv4 "aws:amz:$AWS_REGION:es" -u $AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY)
     elif [ -z "$ELASTIC_USER" ] || [ -z "$ELASTIC_PASS" ] || [ -z "$ELATIC_CA" ]; then
         echo "set ELASTIC_USER, ELASTIC_PASS and ELASTIC_CA variables"
         exit 1
     else
-        command="$command --cacert $ELASTIC_CA -u $ELASTIC_USER:$ELASTIC_PASS"
+        args+=(--cacert $ELASTIC_CA -u $ELASTIC_USER:$ELASTIC_PASS)
     fi
-    command="$command https://${ELASTIC_HOST}${uri}"
-
-    echo "DEBUG: executing command: $command"
-    eval $command
+ 
+    curl "${args[@]}" "${curl_args[@]}" "https://${ELASTIC_HOST}${uri}"
 
 }
 
@@ -53,13 +48,14 @@ function create_index() {
 
 function index_documents() {
     while read p; do
-        call "POST" "${1}/_doc" "Content-Type: application/json" "$p"
-    done < $file
+        call "POST" "/${1}/_doc" -H "Content-Type: application/json" -d "$p"
+    done < $2
 }
 
 
 usage() {
     echo "$0 <command>"
+    echo "==============="
     echo "commands:"
     echo "check_communication"
     echo "health"
