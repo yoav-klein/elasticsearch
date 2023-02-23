@@ -1,5 +1,4 @@
 
-cmd=$1
 
 if [ -z "$ELASTIC_HOST" ]; then
     echo "ELASTIC_HOST is not set"
@@ -52,6 +51,17 @@ function index_documents() {
     done < $2
 }
 
+function bulk_index() {
+    call "POST" "/_bulk" -H "Content-Type: application/x-ndjson" --data-binary "@$1"
+}
+
+function cat_indices() {
+    call "GET" "/_cat/indices"
+}
+
+function delete_index() {
+    call "DELETE" "/$1"
+}
 
 usage() {
     echo "$0 <command>"
@@ -60,14 +70,22 @@ usage() {
     echo "check_communication"
     echo "health"
     echo "create_index <index_name>"
-    echo "index_documents <index_name> <file>"
+    echo "delete_index <index_name>"
+    echo "bulk_index <file>"
+    echo "cat_indices"
 }
+
+cmd=$1
+shift;
 
 case "$cmd" in
     check_communication) check_communication;;
     health) health;;
-    create_index) create_index "$2";;
-    index_documents) index_documents "$2" "$3";;
+    create_index) create_index "$1";;
+    delete_index) delete_index "$1";;
+    cat_indices) cat_indices;;
+    bulk_index) bulk_index "$1";;
     *) usage;;
 esac
+echo ""
 
