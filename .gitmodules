@@ -1,3 +1,0 @@
-[submodule "elastic_data"]
-	path = elastic_data
-	url = https://github.com/yoav-klein/elastic_data
