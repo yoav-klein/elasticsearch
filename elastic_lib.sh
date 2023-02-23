@@ -7,13 +7,13 @@ if [ -z "$ELASTIC_HOST" ]; then
 fi
 
 function call() {
-    uri=$1
-    method=$2
+    method=$1
+    uri=$2
 
     if [ -n "$AWS_SECRET_ACCESS_KEY" ]  && [ -n "$AWS_REGION" ] &&
        [ -n "$AWS_ACCESS_KEY_ID" ] && [ -z "$ELASTIC_IGNORE_AWS" ]; then
         echo "Calling AWS Elasticsearch..."
-        curl -X${method} --aws-sigv4 "aws:$AWS_REGION:es" -u $AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY "https://${ELASTIC_HOST}${uri}"
+        curl -X${method} --aws-sigv4 "aws:amz:$AWS_REGION:es" -u $AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY "https://${ELASTIC_HOST}${uri}"
     elif [ -z "$ELASTIC_USER" ] || [ -z "$ELASTIC_PASS" ] || [ -z "$ELATIC_CA" ]; then
         echo "set ELASTIC_USER, ELASTIC_PASS and ELASTIC_CA variables"
         exit 1
