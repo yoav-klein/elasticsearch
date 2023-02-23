@@ -59,8 +59,16 @@ function cat_indices() {
     call "GET" "/_cat/indices"
 }
 
+function cat_shards_for_index() {
+    call "GET" "/_cat/shards/$1"
+}
+
 function delete_index() {
     call "DELETE" "/$1"
+}
+
+function index_stats() {
+    call "GET" "/$1/_stats/$2"
 }
 
 usage() {
@@ -73,6 +81,8 @@ usage() {
     echo "delete_index <index_name>"
     echo "bulk_index <file>"
     echo "cat_indices"
+    echo "cat_shards_for_index <index_name>"
+    echo "index_stats <index_name>"
 }
 
 cmd=$1
@@ -85,6 +95,8 @@ case "$cmd" in
     delete_index) delete_index "$1";;
     cat_indices) cat_indices;;
     bulk_index) bulk_index "$1";;
+    cat_shards_for_index) cat_shards_for_index "$1";;
+    index_stats) index_stats "$1" "$2";;
     *) usage;;
 esac
 echo ""
