@@ -1,19 +1,37 @@
 #!/bin/bash
 
-elastic_rest() {
-    curl -u elastic:$(cat elastic-pass) --cacert $ES_HOME/config/certs/http_ca.crt https://localhost:9200/
+
+elastic_url=$1
+index=$2
+file=$3
+user=$4
+pass=$5
+
+usage() {
+    echo "$0 <elastic_url> <index> <file> <user> <pass>"
 }
 
-file=file0
-index="shakespeer"
+if [ -z "$elastic_url" ] || [ -z "$file" ] || [ -z "$index" ] ||
+    [ -z "$user" ] || [ -z "$pass" ]; then
+    usage
+    exit 1
+fi
+
+feed_aws() {
+    while read p; do
+        curl --aws-sigv4 "aws:amz:us-east-1:es" -u $user:$pass -H 'Content-Type: application/json' -X POST \
+        "$elastic_url/$index/_doc" -d "$p"
+        echo ""
+    done < $file
+
+}
 
 feed() {
     while read p; do
-        curl -u elastic:$(cat elastic-pass) -H 'Content-Type: application/json' -X POST \
-        --cacert $ES_HOME/config/certs/http_ca.crt "https://localhost:9200/$index/_doc" -d "$p"
+        curl -u $user:$pass -H 'Content-Type: application/json' -X POST \
+        "$elastic_url/$index/_doc" -d "$p"
         echo ""
     done < $file
 }
 
-feed
-#elastic_rest
+feed_aws
