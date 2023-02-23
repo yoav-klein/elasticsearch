@@ -52,11 +52,12 @@ function index_documents() {
 }
 
 function bulk_index() {
+    if [ -z "$1" ]; then echo "bulk_index <file>"; exit; fi
     call "POST" "/_bulk" -H "Content-Type: application/x-ndjson" --data-binary "@$1"
 }
 
 function cat_indices() {
-    call "GET" "/_cat/indices"
+    call "GET" "/_cat/indices?v=true"
 }
 
 function cat_shards_for_index() {
