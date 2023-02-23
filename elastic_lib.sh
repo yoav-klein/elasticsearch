@@ -71,6 +71,10 @@ function index_stats() {
     call "GET" "/$1/_stats/$2"
 }
 
+function allocation() {
+    call "GET" "/_cat/allocation?v=true"
+}
+
 usage() {
     echo "$0 <command>"
     echo "==============="
@@ -83,6 +87,7 @@ usage() {
     echo "cat_indices"
     echo "cat_shards_for_index <index_name>"
     echo "index_stats <index_name>"
+    echo "allocation"
 }
 
 cmd=$1
@@ -97,6 +102,7 @@ case "$cmd" in
     bulk_index) bulk_index "$1";;
     cat_shards_for_index) cat_shards_for_index "$1";;
     index_stats) index_stats "$1" "$2";;
+    allocation) allocation;;
     *) usage;;
 esac
 echo ""
