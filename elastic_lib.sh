@@ -32,7 +32,7 @@ function call() {
 
 }
 
-function check_communication() {
+function ping() {
     call "GET" ""
 }
 
@@ -75,7 +75,7 @@ usage() {
     echo "$0 <command>"
     echo "==============="
     echo "commands:"
-    echo "check_communication"
+    echo "ping"
     echo "health"
     echo "create_index <index_name>"
     echo "delete_index <index_name>"
@@ -89,7 +89,7 @@ cmd=$1
 shift;
 
 case "$cmd" in
-    check_communication) check_communication;;
+    ping) ping;;
     health) health;;
     create_index) create_index "$1";;
     delete_index) delete_index "$1";;
