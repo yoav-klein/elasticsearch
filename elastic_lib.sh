@@ -21,11 +21,12 @@ function call() {
        [ -n "$AWS_ACCESS_KEY_ID" ] && [ -z "$ELASTIC_IGNORE_AWS" ]; then
         echo "Calling AWS Elasticsearch..."
         args+=(--aws-sigv4 "aws:amz:$AWS_REGION:es" -u $AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY)
-    elif [ -z "$ELASTIC_USER" ] || [ -z "$ELASTIC_PASS" ] || [ -z "$ELATIC_CA" ]; then
+    elif [ -z "$ELASTIC_USER" ] || [ -z "$ELASTIC_PASS" ]; then
         echo "set ELASTIC_USER, ELASTIC_PASS and ELASTIC_CA variables"
         exit 1
     else
-        args+=(--cacert $ELASTIC_CA -u $ELASTIC_USER:$ELASTIC_PASS)
+        if [ -n "$ELASTIC_CA" ]; then args+=(--cacert $ELASTIC_CA); fi
+        args+=(-u $ELASTIC_USER:$ELASTIC_PASS)
     fi
  
     curl "${args[@]}" "${curl_args[@]}" "https://${ELASTIC_HOST}${uri}"
@@ -69,11 +70,16 @@ function delete_index() {
 }
 
 function index_stats() {
-    call "GET" "/$1/_stats/$2"
+    call "GET" "/$1/_stats/$2?pretty=true"
 }
 
 function allocation() {
     call "GET" "/_cat/allocation?v=true"
+}
+
+function get_index_mapping() {
+    if [ -z "$1" ]; then echo "get_index_mapping <index_name>"; exit; fi
+    call "GET" "/$1/_mapping?pretty=true"
 }
 
 usage() {
@@ -88,6 +94,7 @@ usage() {
     echo "cat_indices"
     echo "cat_shards_for_index <index_name>"
     echo "index_stats <index_name>"
+    echo "get_index_mapping <index_name>"
     echo "allocation"
 }
 
@@ -103,6 +110,7 @@ case "$cmd" in
     bulk_index) bulk_index "$1";;
     cat_shards_for_index) cat_shards_for_index "$1";;
     index_stats) index_stats "$1" "$2";;
+    get_index_mapping) get_index_mapping "$1";;
     allocation) allocation;;
     *) usage;;
 esac
