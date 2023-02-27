@@ -10,9 +10,6 @@ function call() {
     local uri=$1; shift
     local curl_args=("$@")
     local args=()
-    if [ -n "$header" ]; then
-        command="$command -H \"$header\""
-    fi
     
     echo "DEBUG: uri = ${uri}"
     echo "DEBUG: method = ${method}"
@@ -29,7 +26,7 @@ function call() {
         args+=(-u $ELASTIC_USER:$ELASTIC_PASS)
     fi
  
-    curl "${args[@]}" "${curl_args[@]}" "https://${ELASTIC_HOST}${uri}"
+    curl -X ${method} -v "${args[@]}" "${curl_args[@]}" "https://${ELASTIC_HOST}${uri}"
 
 }
 
