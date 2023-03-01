@@ -26,7 +26,7 @@ function call() {
         args+=(-u $ELASTIC_USER:$ELASTIC_PASS)
     fi
  
-    curl -X ${method} -v "${args[@]}" "${curl_args[@]}" "https://${ELASTIC_HOST}${uri}"
+    curl -X ${method}  "${args[@]}" "${curl_args[@]}" "https://${ELASTIC_HOST}${uri}"
 
 }
 
