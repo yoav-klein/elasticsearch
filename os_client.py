@@ -1,12 +1,14 @@
 from opensearchpy import OpenSearch, RequestsHttpConnection, AWSV4SignerAuth
 import boto3
 import requests
-import http.client
-host = "uq2u3cwe6rqm0ry46j5c.us-east-1.aoss.amazonaws.com"
+
+#import http.client
+
+host = "search-test-domain-737pcjexzuc3zf24zelxmeb3fa.us-east-1.es.amazonaws.com"
 #host = 'vyz5r957clrv1joo7hza.us-east-1.aoss.amazonaws.com'  # serverless collection endpoint, without https://
 region = 'us-east-1'  # e.g. us-east-1
 
-service = 'aoss'
+service = 'es'
 credentials = boto3.Session().get_credentials()
 auth = AWSV4SignerAuth(credentials, region, service)
 
@@ -20,8 +22,7 @@ client = OpenSearch(
     pool_maxsize=20,
 )
 
-http.client.HTTPConnection.debuglevel = 1
-#print(requests.get(f"https://{host}", auth=auth))
+#http.client.HTTPConnection.debuglevel = 1
 
 
 # create an index
