@@ -1,14 +1,14 @@
+import os
+
 import boto3
 
 from opensearchpy import OpenSearch, RequestsHttpConnection, AWSV4SignerAuth
 from opensearchpy.helpers import bulk
 from faker import Faker
 
-#import http.client
 
-host = "search-test-domain-737pcjexzuc3zf24zelxmeb3fa.us-east-1.es.amazonaws.com"
-#host = 'vyz5r957clrv1joo7hza.us-east-1.aoss.amazonaws.com'  # serverless collection endpoint, without https://
-region = 'us-east-1'  # e.g. us-east-1
+host = os.getenv('ELASTIC_HOST')
+region = os.getenv('AWS_REGION')  # e.g. us-east-1
 
 service = 'es'
 credentials = boto3.Session().get_credentials()
