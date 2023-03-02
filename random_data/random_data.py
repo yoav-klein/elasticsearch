@@ -10,6 +10,14 @@ from faker import Faker
 host = os.getenv('ELASTIC_HOST')
 region = os.getenv('AWS_REGION')  # e.g. us-east-1
 
+print(f"host: {host}")
+print(f"region: {region}")
+
+if host == None or region == None:
+    print("ELASTIC_HOST or AWS_REGION not defined")
+    exit(1)
+
+
 service = 'es'
 credentials = boto3.Session().get_credentials()
 auth = AWSV4SignerAuth(credentials, region, service)
