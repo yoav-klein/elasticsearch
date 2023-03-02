@@ -63,7 +63,10 @@ def create_client():
     auth = AWSV4SignerAuth(credentials, region, service)
 
     if host == None:
-        raise "no ELASTIC_HOST defined"
+        raise Exception("no ELASTIC_HOST defined")
+
+    if region == None:
+        raise Exception("no AWS_REGION defined")
 
     client = OpenSearch(
         hosts=[{'host': host, 'port': 443}],
